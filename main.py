@@ -372,6 +372,30 @@ def root():
     }
 
 
+@app.post("/extract")
+def extract_pdf(request: ExtractRequest):
+    pdf_url = str(request.pdf_url)
+
+    # Download the PDF using the existing helper
+    pdf_bytes = download_pdf(pdf_url)
+
+    # Extract text and tables
+    content = extract_pdf_content(pdf_bytes)
+
+    return {
+        "success": True,
+        "source": {
+            "pdf_url": pdf_url
+        },
+        "pdf": {
+            "pages": content["pages"],
+            "characters": len(content["text"]),
+            "words": len(content["text"].split())
+        },
+        "text": content["text"],
+        "tables": content["tables"]
+    }
+
 @app.post("/aiextractor")
 def ai_extract_pdf(request: ExtractRequest):
 
